@@ -8,6 +8,8 @@ export default function Home() {
   const [dogName, setDogName] = useState("");
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [mainImageWidth, setMainImageWidth] = useState("300px"); // メインの画像の幅
+  const [previousImagesWidth, setPreviousImagesWidth] = useState("100px"); // 過去の画像の幅
 
   useEffect(() => {
     fetch("https://dog.ceo/api/breeds/image/random")
@@ -49,6 +51,19 @@ export default function Home() {
     return urlParts[urlParts.length - 2];
   };
 
+  const handleImageLoad = (event) => {
+    // 画像の幅を設定
+    const imgWidth = event.target.width;
+    if (dogImages.length === 0) {
+      // メインの画像の幅
+      setMainImageWidth(`${imgWidth}px`);
+    } else {
+      // 過去の画像の幅
+      setPreviousImagesWidth(`${imgWidth}px`);
+    }
+    setImageLoaded(true);
+  };
+
   return (
     <Container>
       <Row className="mt-5 justify-content-center">
@@ -64,6 +79,8 @@ export default function Home() {
                   src={dogImages[dogImages.length - 1]}
                   alt="Random Dog"
                   className="img-fluid"
+                  onLoad={handleImageLoad}
+                  style={{ maxWidth: mainImageWidth }} // メインの画像の幅を指定
                 />
               ) : (
                 <p>Loading image...</p>
@@ -81,13 +98,13 @@ export default function Home() {
         <Col xs={12} md={6} className="text-center">
           <h2>Previous Dog Images</h2>
           <div className="d-flex flex-wrap justify-content-center">
-            {dogImages.slice(-4).map((image, index) => (
+            {dogImages.slice(0, -1).map((image, index) => (
               <img
                 key={index}
                 src={image}
                 alt={`Dog ${index}`}
                 className="img-thumbnail m-2"
-                style={{ maxWidth: "100px" }}
+                style={{ maxWidth: previousImagesWidth }} // 過去の画像の幅を指定
               />
             ))}
           </div>
